@@ -15,6 +15,13 @@ telnet localhost 3000
 telnet> status
 ## Connected to localhost
 
+# send data packets
+telnet> send something
+
+# or close the telnet prompt and go back to the session and start typing
+something
+
+# Windows: Ctrl + ] to enter telnet client
 # disconnect
 telnet> close
 

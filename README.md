@@ -5,6 +5,7 @@
 
 - `hostname` - server name on the network, defaults to localhost for the loop-back interface that is mapped to 127.0.0.1
 - `echo` - setup the server to echo back the data sent from the client
+- `mode` - switch betwen two example modes of handling data received, either packets or buffered lines (for example cmd server)
 
 ## Usage
 
@@ -15,9 +16,7 @@
 const tcp = require('../src/index.js');
 
 const server = tcp.createServer();
-server.listen(3000, () => {
-    console.log(`Server started at ${server.address().toString()}`)
-});
+server.listen(3000);
 ```
 
 ## Testing

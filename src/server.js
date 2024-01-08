@@ -1,40 +1,82 @@
 const net = require('net');
+const os = require('os');
 
-const NL = '\r\n';
+// NOTE: add more as you wish, example byte, json, other
+const MODES = {
+    PACKET: 'PACKET',
+    LINE: 'LINE'
+}
 
 function createServer({
     hostname = 'localhost',
     echo = false,
+    mode = MODES.PACKET
 } = {}) {
     const server = net.createServer();
     server.on('connection', handleConnection);
 
+    console.log('[server] created...')
+    console.log('[server] running %s mode...', mode)
+    
     function handleConnection(socket) {
         var remoteAddress = socket.remoteAddress + ':' + socket.remotePort;  
-        console.log(`new client connection from ${remoteAddress}`);
+        console.log('[%s] connected...', remoteAddress);
         
         socket.setEncoding('utf8');
-        socket.on('data', onConnData);  
-        socket.once('close', onConnClose);
-        socket.on('error', onConnError);
+        socket.on('data', onConnectionDataReceive);  
+        socket.on('error', onConnectionError);
+        socket.once('close', onConnectionClose);
 
-        function onConnData(d) {  
-            console.log('connection data from %s: %j', remoteAddress, d);
+        let buffer = '';
+
+        function onConnectionDataReceive(data) {
+            buffer += data.toString();
+
+            switch (mode) {
+                case MODES.LINE:
+                    handleLineMode(buffer);
+                    break;
+                case MODES.PACKET:
+                default:
+                    handlePacketMode(buffer);
+                    break;
+            }
+
             if (echo) {
-                socket.write(d);
+                socket.write(data);
             }
         }
 
-        function onConnClose() {  
-            console.log('connection from %s closed', remoteAddress);  
+        function onConnectionClose() {  
+            console.log('[%s] connection closed.', remoteAddress);  
         }
 
-        function onConnError(err) {
-            console.log('Connection %s error: %s', remoteAddress, err.message);  
+        function onConnectionError(err) {
+            console.log('[%s] connection error: %s', remoteAddress, err.message);  
         }
 
-        socket.write(`[server] > Connected to ${address().toString()}`);
-        socket.write(NL);
+        function handleLineMode(buffer) {
+            const lines = buffer.split(/\r?\n/);
+            const incompleteLine = lines.pop(); // The last element may be an incomplete line
+
+            for (const line of lines) {
+                // Process each complete line
+                console.log('[%s] connection line received: %j', remoteAddress, line);
+            }
+
+            buffer = incompleteLine || '';
+        }
+
+        function handlePacketMode(buffer) {
+            console.log('[%s] connection packet received: %j', remoteAddress, line);
+            buffer = '';
+        }
+
+        function sendMessage(socket, message) {
+            socket.write(message + os.EOL);
+        }
+
+        sendMessage(socket, `[server] Connected to ${address().toString()}`);
     }
 
     const address = () => {
@@ -45,10 +87,14 @@ function createServer({
         }
     }
 
+    const defaultListeningCallback = (port) => {
+        console.log(`[server] listening on ${hostname}:${port}${os.EOL}`);
+    }
+
     return {
-        listen: (port, callback) => server.listen(port, hostname, callback),
+        listen: (port, callback) => server.listen(port, hostname, callback ?? defaultListeningCallback(port)),
         address,
     }
 }
 
-module.exports = { createServer };
+module.exports = { createServer, MODES };

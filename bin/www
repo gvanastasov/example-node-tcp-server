@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 const tcp = require('../src/index.js');
 
-const server = tcp.createServer();
-server.listen(3000, () => {
-    console.log(`Server started at ${server.address().toString()}`)
-});
+const server = tcp.createServer({ mode: tcp.MODES.LINE });
+server.listen(3000);

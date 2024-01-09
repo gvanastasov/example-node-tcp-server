@@ -1,3 +1,4 @@
 module.exports = { 
-    ...require('./server.js') 
+    ...require('./server.js'),
+    ...require('./client.js')
 }

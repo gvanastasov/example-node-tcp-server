@@ -1,0 +1,10 @@
+#!/usr/bin/env node
+const tcp = require('../src/index.js');
+
+const [,, host, port] = process.argv;
+if (!host || !port) {
+    console.error('Usage: node connect <hostname> <port>');
+    process.exit(1);
+}
+
+tcp.connect({ host, port });

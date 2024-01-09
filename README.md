@@ -1,5 +1,5 @@
 # example-node-tcp-server
- Just a dummy example of a tcp server receiving and sending packets.
+ Just a dummy example of a tcp server receiving and sending packets, as well as a client socket connecting and doing the same.
 
 ## Options
 
@@ -17,6 +17,15 @@ const tcp = require('../src/index.js');
 
 const server = tcp.createServer();
 server.listen(3000);
+```
+
+3. Create a connection socket
+4. Send messages via prompt
+
+```js
+const tcp = require('../src/index.js');
+
+tcp.connect({ host: 'localhost', port: 3000 });
 ```
 
 ## Testing
@@ -46,3 +55,5 @@ telnet> close
 # quit
 telnet> quit
 ```
+
+2. Client Socket - just check `Usage > pt.3` above.

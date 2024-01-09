@@ -28,6 +28,8 @@ const tcp = require('../src/index.js');
 tcp.connect({ host: 'localhost', port: 3000 });
 ```
 
+> can exit the terminal by either typing `exit` or by terminating (ctrl+c for Windows)
+
 ## Testing
 
 1. Telnet
